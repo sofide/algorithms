@@ -35,7 +35,24 @@ def sort_and_count(a_list):
     return total_inversions, sorted_list
 
 
-if __name__ == "__main__":
-    input_list = [int(x) for x in sys.argv[1:]]
+def get_list_from_file(filepath):
+    with open(filepath) as file:
+        raw_numbers = file.readlines()
 
-    print(sort_and_count(input_list))
+    return [int(number.strip()) for number in raw_numbers]
+
+
+if __name__ == "__main__":
+    try:
+        input_list = [int(x) for x in sys.argv[1:]]
+
+        print(sort_and_count(input_list))
+    except ValueError:
+        file_path = sys.argv[1]
+        print(f"Procesing the file {file_path}")
+
+        input_list = get_list_from_file(file_path)
+        print(f"Received a list of {len(input_list)} elements")
+
+        inversions, _ = sort_and_count(input_list)
+        print(f"Total inversions: {inversions}")
