@@ -20,12 +20,16 @@ import logging
 import random
 import sys
 
+from tqdm import trange
+
 logger = logging.getLogger(__name__)
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
+
+TRIALS_DEFAULT = 100
 
 
 def graph_from_file(filename):
@@ -95,6 +99,19 @@ def random_contraction(graph, depth=0):
 
     return random_contraction(graph, depth+1)
 
+def min_cut(graph, trials=TRIALS_DEFAULT):
+    pbar = trange(trials)
+    min_cut_so_far = None
+    iter_min = None
+
+    for iteration in pbar:
+        crossing_edges = random_contraction(graph.copy())
+        if not min_cut_so_far or min_cut_so_far > crossing_edges:
+            min_cut_so_far = crossing_edges
+            iter_min = iteration
+        pbar.set_description(f"Min {min_cut_so_far} - founded in {iter_min}")
+
+    return min_cut_so_far
 
 if __name__ == "__main__":
     if "-v" in sys.argv:
@@ -106,6 +123,6 @@ if __name__ == "__main__":
 
     graph = graph_from_file(filename)
 
-    crossing_edges = random_contraction(graph)
+    crossing_edges = min_cut(graph)
 
     print(f"{crossing_edges=}")
