@@ -45,16 +45,18 @@ class StronglyConnectedComponents:
         finishing_order = []
         components_leaders = Counter()
 
-        def depth_first_search(graph, start, current_leader=None):
-            if current_leader is None:
-                current_leader = start
+        def depth_first_search(graph, start):
+            nodes_to_expand = [start]
 
-            components_leaders[current_leader] += 1
-            explored_vertices.append(start)
-
-            for edge_head in graph[start]:
-                if edge_head not in explored_vertices:
-                    depth_first_search(graph, edge_head, current_leader)
+            while nodes_to_expand:
+                tail = nodes_to_expand.pop(-1)
+                if tail not in explored_vertices:
+                    explored_vertices.append(tail)
+                    components_leaders[start] += 1
+                    print(f"    node {tail}")
+                    for head in graph[tail]:
+                        if head not in explored_vertices:
+                            nodes_to_expand.append(head)
 
             finishing_order.append(start)
 
@@ -63,6 +65,7 @@ class StronglyConnectedComponents:
 
         for node in tqdm(order):
             if node not in explored_vertices:
+                print(f"leader {node}")
                 depth_first_search(graph, node)
 
         return finishing_order, components_leaders
