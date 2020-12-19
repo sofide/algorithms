@@ -41,7 +41,7 @@ class StronglyConnectedComponents:
 
     @staticmethod
     def _scc_calc(graph, order=None):
-        explored_vertices = []
+        explored_vertices = set()
         finishing_order = []
         components_leaders = Counter()
 
@@ -53,13 +53,14 @@ class StronglyConnectedComponents:
             while nodes_to_expand:
                 tail = nodes_to_expand.pop(-1)
                 if tail not in explored_vertices:
+                    pbar.set_description(f"Nodes to expand {len(nodes_to_expand)}")
                     starting_order.append(tail)
-                    explored_vertices.append(tail)
+                    explored_vertices.add(tail)
                     components_leaders[start] += 1
                     # print(f"    node {tail}")
-                    for head in graph[tail]:
-                        if head not in explored_vertices:
-                            nodes_to_expand.append(head)
+                    nodes_to_expand.extend(
+                        [head for head in graph[tail] if head not in explored_vertices]
+                    )
 
             starting_order.reverse()
             finishing_order.extend(starting_order)
@@ -67,7 +68,8 @@ class StronglyConnectedComponents:
         if not order:
             order = list(graph)
 
-        for node in tqdm(order):
+        pbar = tqdm(order)
+        for node in pbar:
             if node not in explored_vertices:
                 # print(f"leader {node}")
                 depth_first_search(graph, node)
