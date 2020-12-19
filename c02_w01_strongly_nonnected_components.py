@@ -2,6 +2,8 @@ from collections import defaultdict, Counter
 from dataclasses import dataclass
 import sys
 
+from tqdm import tqdm
+
 
 @dataclass
 class StronglyConnectedComponents:
@@ -9,6 +11,9 @@ class StronglyConnectedComponents:
 
     @property
     def graph(self):
+        """
+        Read graph from the given file
+        """
         if not hasattr(self, "_graph"):
             self._graph = defaultdict(list)
 
@@ -21,12 +26,15 @@ class StronglyConnectedComponents:
 
     @property
     def inverted_graph(self):
+        """
+        calc the inverted graph
+        """
         if not hasattr(self, "_inverted_graph"):
             self._inverted_graph = defaultdict(list)
 
             for tail, heads in self.graph.items():
                 for head in heads:
-                    self._inverted_graph[head] = tail
+                    self._inverted_graph[head].append(tail)
 
         return self._inverted_graph
 
@@ -48,19 +56,15 @@ class StronglyConnectedComponents:
                 if edge_head not in explored_vertices:
                     depth_first_search(graph, edge_head, current_leader)
 
-            # print(f"append {start} {len(finishing_order)=}")
             finishing_order.append(start)
 
         if not order:
             order = list(graph)
 
-        # print(f"the order is: {order=} {len(order)=}")
-
-        for node in order:
+        for node in tqdm(order):
             if node not in explored_vertices:
                 depth_first_search(graph, node)
 
-        # print(f"finishing order is: {finishing_order=} {len(finishing_order)=}")
         return finishing_order, components_leaders
 
     def calc(self):
