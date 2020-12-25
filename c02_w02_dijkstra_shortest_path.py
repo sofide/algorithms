@@ -1,5 +1,6 @@
 import sys
 from dataclasses import dataclass
+from time import time
 
 NO_PATH_LENGHT = 1000000
 
@@ -45,14 +46,18 @@ class DijkstraShortestPath:
 
 
 if __name__ == "__main__":
+    starting_time = time()
     filename = sys.argv[1]
     problem = DijkstraShortestPath(filename)
 
-    print(problem.graph)
+    # print(problem.graph)
     problem.calc_shortest_path()
 
-    print(f"shortest path: {problem.shortest_path}")
+    # print(f"shortest path: {problem.shortest_path}")
 
     print("solution:")
     nodes_to_report = [7, 37, 59, 82, 99, 115, 133, 165, 188, 197]
     print(",".join(str(problem.shortest_path[str(vertex)]) for vertex in nodes_to_report))
+    end_time = time()
+
+    print(f"Running time: {end_time - starting_time}")
