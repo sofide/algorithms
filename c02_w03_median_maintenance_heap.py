@@ -15,6 +15,7 @@ OPTIONAL EXERCISE: Compare the performance achieved by heap-based and search-tre
 implementations of the algorithm.
 """
 import sys
+import time
 from heapq import heappop, heappush
 
 min_heappush, min_heappop = heappush, heappop
@@ -81,6 +82,7 @@ def solve_homework(input_list):
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     input_file = sys.argv[1]
 
     print(f"Reading file {input_file}...")
@@ -91,4 +93,5 @@ if __name__ == "__main__":
 
     print(f"Result: {result}")
 
-
+    end_time = time.time()
+    print(f"calculated in {end_time - start_time} seconds")
