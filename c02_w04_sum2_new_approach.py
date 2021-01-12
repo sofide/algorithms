@@ -17,7 +17,6 @@ OPTIONAL CHALLENGE: If this problem is too easy for you, try implementing your o
 table for it. For example, you could compare performance under the chaining and open
 addressing approaches to resolving collisions.
 
-
 CORRECT ANSWER: 427
 """
 import sys
@@ -31,13 +30,18 @@ class Sum2Problem:
         with open(filename) as f:
             self.numbers = {int(number) for number in f.readlines()}
         print(f"size of numbers set: {len(self.numbers)}")
+        self.sorted_numbers = sorted(self.numbers)
 
     def sum_2(self, target):
         """
         return True if there is any distinct x and y in self.numbers such as:
         x + y = target
         """
-        for x in self.numbers:
+        half_target = round(target / 2)
+
+        for x in self.sorted_numbers:
+            if x >= half_target:
+                break
             y = target - x
             if x != y and y in self.numbers:
                 return True
