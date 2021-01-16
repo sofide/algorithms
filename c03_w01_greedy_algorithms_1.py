@@ -28,6 +28,8 @@ the box below.
 ADVICE: If you get the wrong answer, try out some small test cases to debug your
 algorithm (and post your test cases to the discussion forum).
 
+CORRET ANSWER: 69119377652
+
 -------
 2. For this problem, use the same data set as in the previous problem.
 
@@ -35,6 +37,8 @@ Your task now is to run the greedy algorithm that schedules jobs (optimally) in
 decreasing order of the ratio (weight/length).  In this algorithm, it does not matter
 how you break ties.  You should report the sum of weighted completion times of the
 resulting schedule --- a positive integer --- in the box below.
+
+CORRET ANSWER: 67311454237
 """
 import sys
 from dataclasses import dataclass
@@ -100,10 +104,10 @@ if __name__ == "__main__":
 
     problem_difference = GreedyProblem(filename, greedy_difference)
     print("WEIGHTED COMPLETION TIME DIFFERENCE")
-    print(problem_difference.ordered_tasks)
+    # print(problem_difference.ordered_tasks)
     print(problem_difference.weighted_completion_time())
 
     problem_ratio = GreedyProblem(filename, greedy_ratio)
     print("WEIGHTED COMPLETION TIME RATIO")
-    print(problem_ratio.ordered_tasks)
+    # print(problem_ratio.ordered_tasks)
     print(problem_ratio.weighted_completion_time())
