@@ -66,8 +66,8 @@ class BigClusteringProblem:
                 current_node = tuple(line.split())
                 for other_node in all_nodes:
                     hamming_distance = 0
-                    for x in range(self.bits_for_node):
-                        if current_node[x] != other_node[x]:
+                    for bit_index, current_bit in enumerate(current_node):
+                        if current_bit != other_node[bit_index]:
                             hamming_distance +=1
                             if hamming_distance > 2:
                                 break
