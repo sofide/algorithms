@@ -35,10 +35,11 @@ little creative to complete this part of the question.  For example, is there so
 you can identify the smallest distances without explicitly looking at every pair of
 nodes?
 """
+import pickle
 import sys
 from dataclasses import dataclass
 
-import tqdm
+from tqdm import tqdm
 
 from c03_w02_clustering_algorithm_1 import UnionFindClusters, SameClusterUnionError
 
@@ -47,34 +48,61 @@ from c03_w02_clustering_algorithm_1 import UnionFindClusters, SameClusterUnionEr
 class BigClusteringProblem:
     filename: str
 
+    backup_init_file = "c03_w02_backup_init.json"
+
     def __post_init__(self):
-        all_nodes = set()
-        self.distance_of_one = []
-        self.distance_of_two = []
+        processed_lines, all_nodes, near_nodes = self._restore_init()
+        self.distance_lower_than_three = near_nodes
 
         with open(self.filename) as datafile:
-            for index, line in enumerate(datafile.readlines()):
-                if index == 0:
-                    nodes_quantity, bits = line.split()
-                    self.bits_for_node = int(bits)
-                    self.nodes_quantity = int(nodes_quantity)
-                    continue
+            info, *nodes = datafile.readlines()
+            nodes_quantity, bits = info.split()
+            self.bits_for_node = int(bits)
+            self.nodes_quantity = int(nodes_quantity)
 
+            for index, line in tqdm(enumerate(nodes)):
+                if index < processed_lines:
+                    continue
                 current_node = tuple(line.split())
                 for other_node in all_nodes:
-                    distance = self.hamming_distance(current_node, other_node)
-                    if distance == 1:
-                        self.distance_of_one.append((current_node, other_node))
-                    elif distance == 2:
-                        self.distance_of_two.append((current_node, other_node))
+                    hamming_distance = 0
+                    for x in range(self.bits_for_node):
+                        if current_node[x] != other_node[x]:
+                            hamming_distance +=1
+                            if hamming_distance > 2:
+                                break
+                    else:
+                        self.distance_lower_than_three.append((current_node, other_node))
 
                 all_nodes.add(current_node)
 
+                if index % 1000 == 0:
+                    self._backup(index, all_nodes, self.distance_lower_than_three)
+
         self.clusters = UnionFindClusters(all_nodes)
 
-    def hamming_distance(self, node_1: tuple, node_2: tuple):
-        diff_bits = [x for x in range(self.bits_for_node) if node_1[x] != node_2[x]]
-        return len(diff_bits)
+    def _restore_init(self):
+        try:
+            with open(self.backup_init_file, "rb") as backup_file:
+                data = pickle.load(backup_file)
+        except FileNotFoundError:
+            data = {}
+
+        if data:
+            return data["processed_lines"], data["all_nodes"], data["near_nodes"]
+
+        return -1, set(), list()
+
+
+    def _backup(self, processed_lines, all_nodes, near_nodes):
+        backup = {
+            "processed_lines": processed_lines,
+            "all_nodes": all_nodes,
+            "near_nodes": near_nodes,
+        }
+        with open(self.backup_init_file, "wb") as backup_file:
+            pickle.dump(backup, backup_file)
+
 
     def _force_union(self, nodes):
         try:
