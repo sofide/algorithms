@@ -79,6 +79,8 @@ class BigClusteringProblem:
                 if index % 1000 == 0:
                     self._backup(index, all_nodes, self.distance_lower_than_three)
 
+            self._backup(index, all_nodes, self.distance_lower_than_three)
+
         self.clusters = UnionFindClusters(all_nodes)
 
     def _restore_init(self):
@@ -111,10 +113,7 @@ class BigClusteringProblem:
             pass
 
     def merge_until_spacing_of_three(self):
-        for nodes in self.distance_of_one:
-            self._force_union(nodes)
-
-        for nodes in self.distance_of_two:
+        for nodes in self.distance_lower_than_three:
             self._force_union(nodes)
 
 
