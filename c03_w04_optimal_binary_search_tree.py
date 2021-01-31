@@ -43,6 +43,7 @@ def binary_search_tree(weights=None):
 if __name__ == "__main__":
     web_example = [4, 2, 6, 3]  # expected result=26
     result = binary_search_tree()
+    # Expected result with default weights=2.18
     print(f"Result = {result}")
 
 
