@@ -32,12 +32,19 @@ OPTIONAL: Here is a bigger data set to play with.
 c04_w01_homework_input_4_large.txt
 
 For fun, try computing the shortest shortest path of the graph in the file above.
+
+_____
+Solution:
+- input1: negative cycle
+- input2: negative cycle
+- input3: -19
 """
 from collections import defaultdict
 import sys
 
 import numpy
 from tqdm import tqdm
+
 
 class NegativeCycleError(Exception):
     pass
