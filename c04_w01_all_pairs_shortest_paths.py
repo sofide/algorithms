@@ -102,6 +102,13 @@ class FloydWarshallAlgorithm(AllPairsShortestPath):
 
             previous_calc = current_calc
 
+        index_min = current_calc.argmin()
+
+        path_from = index_min // self.total_vertices
+        path_to = index_min % self.total_vertices
+
+        print(f"({path_from}, {path_to})")
+
         return current_calc.min()
 
 
