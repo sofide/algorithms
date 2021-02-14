@@ -1,3 +1,4 @@
 __pycache__
 *.pyc
+.ipynb_checkpoints/
 c03_w02_backup_init.json
