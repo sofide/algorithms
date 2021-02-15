@@ -24,7 +24,7 @@ that structure to speed up your algorithm?
 
 CORRECT ANSWER: 26442
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from itertools import combinations
 import math
 import sys
@@ -49,7 +49,7 @@ def get_cities_coordinates(filename):
 @dataclass
 class TravelingSalesmanProblem:
     cities_coordinates: list
-    euclidean_distances: dict
+    euclidean_distances: dict = field(default_factory=dict)
 
     def calc_euclidean_distance(self, city1: int, city2: int):
         if (city1, city2) not in self.euclidean_distances:
@@ -105,5 +105,5 @@ class TravelingSalesmanProblem:
 if __name__ == "__main__":
     filename = sys.argv[1]
     cities = get_cities_coordinates(filename)
-    problem = TravelingSalesmanProblem(cities, {})
+    problem = TravelingSalesmanProblem(cities)
     print(problem.solve())
