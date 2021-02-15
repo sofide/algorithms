@@ -33,6 +33,8 @@ neighbor heuristic for this instance, rounded down to the nearest integer.
 Euclidean distances (i.e., the formula above but without the square root) than
 Euclidean distances.  But don't forget to report the length of the tour in terms of
 standard Euclidean distance.]
+
+CORRECT ANSWER = 1203406
 """
 from dataclasses import dataclass, field
 import math
@@ -59,19 +61,12 @@ def get_cities_coordinates(filename):
 @dataclass
 class TravelingSalesmanHeuristic:
     cities_coordinates: list
-    euclidean_distances: dict = field(default_factory=dict)
 
     def calc_euclidean_distance(self, city1: int, city2: int):
-        if (city1, city2) not in self.euclidean_distances:
-            x1, y1 = city1
-            x2, y2 = city2
+        x1, y1 = city1
+        x2, y2 = city2
 
-            distance = math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
-            self.euclidean_distances[(city1, city2)] = distance
-            self.euclidean_distances[(city2, city1)] = distance
-
-        return self.euclidean_distances[(city1, city2)]
-
+        return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
 
     def heuristic(self):
         first_city = self.cities_coordinates.pop(0)
