@@ -153,7 +153,8 @@ class PapadimitriouAlgorithm:
         total_clauses = len(self.clauses)
         outer_iterations = int(math.log2(total_clauses))
         inner_iterations = 2 * (total_clauses ** 2)
-        inner_pbar_ratio = 1000
+        inner_pbar_ratio = int(inner_iterations / 100000)
+        inner_pbar_ratio = 10_000
 
         for _ in tqdm(range(outer_iterations), desc="outer_loop"):
             self.random_initialization()
@@ -198,6 +199,29 @@ if __name__ == "__main__":
         print(problem.solve(debug=True))
         print(problem.assignments)
 
+        sys.exit()
+
+    elif filename == "all":
+        all_homework_files = [
+            "c04_w04_homework_input_1.txt",
+            "c04_w04_homework_input_2.txt",
+            "c04_w04_homework_input_3.txt",
+            "c04_w04_homework_input_4.txt",
+            "c04_w04_homework_input_5.txt",
+            "c04_w04_homework_input_6.txt",
+        ]
+        solutions = ""
+        for filename in all_homework_files:
+            clauses = get_clauses_from_file(filename)
+            problem = PapadimitriouAlgorithm(clauses)
+            is_soluble = problem.solve()
+            print(f"{filename} is soluble: {is_soluble}")
+            if is_soluble:
+                solutions += "1"
+            else:
+                solutions += "0"
+
+        print(f"final solution: {solutions}")
         sys.exit()
 
     clauses = get_clauses_from_file(filename)
