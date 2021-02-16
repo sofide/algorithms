@@ -134,7 +134,18 @@ class PapadimitriouAlgorithm:
             else:
                 self.invalid_clauses.add(clause_index)
 
-    def solve(self):
+    def print_status(self):
+        for variable_name, variable in self.assignments.items():
+            print(f"{variable_name} = {variable.value}")
+
+        for clause in self.clauses:
+            part_one, part_two = clause
+            part_one_value = self.assignments[abs(part_one)].value
+            part_two_value = self.assignments[abs(part_two)].value
+            valid = self.clause_is_valid(clause)
+            print(f"{clause} | {part_one} = {part_one_value} | {part_two} = {part_two_value} | valid clause = {valid}")
+
+    def solve(self, debug=False):
         total_clauses = len(self.clauses)
         outer_iterations = int(math.log2(total_clauses))
         inner_iterations = 2 * (total_clauses ** 2)
@@ -143,12 +154,17 @@ class PapadimitriouAlgorithm:
             self.random_initialization()
 
             for _ in tqdm(range(inner_iterations), desc="inner loop", leave=False):
+                if debug:
+                    self.print_status()
                 if not self.invalid_clauses:
                     return True
 
                 random_clause = random.choice(list(self.invalid_clauses))
                 random_variable = abs(random.choice(self.clauses[random_clause]))
                 self.switch_variable(random_variable)
+                if debug:
+                    print(f"random variable to switch = {random_variable}")
+                    input()
 
         return False
 
@@ -160,6 +176,9 @@ if __name__ == "__main__":
         (3, 4),
         (-2, -4),
     ]
+    # should be True with assignations:
+    # x1 = x3 = True
+    # x2 = x4 = False
     problem = PapadimitriouAlgorithm(testing_input)
-    print(problem.solve())
+    print(problem.solve(debug=True))
     print(problem.assignments)
