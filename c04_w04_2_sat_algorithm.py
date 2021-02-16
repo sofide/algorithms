@@ -156,8 +156,9 @@ class PapadimitriouAlgorithm:
 if __name__ == "__main__":
     testing_input = [
         (1, 2),
-        (-1, 2),
-        (-2, 3),
+        (-1, 3),
+        (3, 4),
+        (-2, -4),
     ]
     problem = PapadimitriouAlgorithm(testing_input)
     print(problem.solve())
