@@ -38,6 +38,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 import math
 import random
+import sys
 
 from tqdm import tqdm
 
@@ -84,13 +85,16 @@ class PapadimitriouAlgorithm:
         """
         part_one, part_two = clause
 
+
         expected_part_one_value = part_one > 0
-        part_one_value = self.assignments[abs(part_one)] == expected_part_one_value
+        part_one_value = self.assignments[abs(part_one)].value
+        part_one_has_expected_value = part_one_value == expected_part_one_value
 
         expected_part_two_value = part_two > 0
-        part_two_value = self.assignments[abs(part_two)] == expected_part_two_value
+        part_two_value = self.assignments[abs(part_two)].value
+        part_two_has_expected_value = part_two_value == expected_part_two_value
 
-        return part_one_value or part_two_value
+        return part_one_has_expected_value or part_two_has_expected_value
 
 
     def random_initialization(self):
@@ -149,11 +153,16 @@ class PapadimitriouAlgorithm:
         total_clauses = len(self.clauses)
         outer_iterations = int(math.log2(total_clauses))
         inner_iterations = 2 * (total_clauses ** 2)
+        inner_pbar_ratio = 1000
 
-        for _ in tqdm(range(outer_iterations), desc="outer loop"):
+        for _ in tqdm(range(outer_iterations), desc="outer_loop"):
             self.random_initialization()
 
-            for _ in tqdm(range(inner_iterations), desc="inner loop", leave=False):
+            inner_progress_bar = tqdm(total=inner_iterations, desc="inner_loop")
+            for inner_it in range(inner_iterations):
+                if inner_it and inner_it % inner_pbar_ratio == 0:
+                    inner_progress_bar.update(inner_pbar_ratio)
+
                 if debug:
                     self.print_status()
                 if not self.invalid_clauses:
@@ -170,15 +179,25 @@ class PapadimitriouAlgorithm:
 
 
 if __name__ == "__main__":
-    testing_input = [
-        (1, 2),
-        (-1, 3),
-        (3, 4),
-        (-2, -4),
-    ]
-    # should be True with assignations:
-    # x1 = x3 = True
-    # x2 = x4 = False
-    problem = PapadimitriouAlgorithm(testing_input)
-    print(problem.solve(debug=True))
-    print(problem.assignments)
+    filename = sys.argv[1]
+
+    if filename == "test":
+        testing_input = [
+            (1, 2),
+            (-1, 3),
+            (3, 4),
+            (-2, -4),
+        ]
+        # should be True with assignations:
+        # x1 = x3 = True
+        # x2 = x4 = False
+        problem = PapadimitriouAlgorithm(testing_input)
+        print(problem.solve(debug=True))
+        print(problem.assignments)
+
+        sys.exit()
+
+    clauses = get_clauses_from_file(filename)
+
+    problem = PapadimitriouAlgorithm(clauses)
+    print(problem.solve())
