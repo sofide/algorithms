@@ -39,6 +39,8 @@ from dataclasses import dataclass, field
 import math
 import random
 
+from tqdm import tqdm
+
 
 def get_clauses_from_file(filename):
     with open(filename) as clauses_file:
@@ -137,10 +139,10 @@ class PapadimitriouAlgorithm:
         outer_iterations = int(math.log2(total_clauses))
         inner_iterations = 2 * (total_clauses ** 2)
 
-        for _ in range(outer_iterations):
+        for _ in tqdm(range(outer_iterations), desc="outer loop"):
             self.random_initialization()
 
-            for _ in range(inner_iterations):
+            for _ in tqdm(range(inner_iterations), desc="inner loop", leave=False):
                 if not self.invalid_clauses:
                     return True
 
