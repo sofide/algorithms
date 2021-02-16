@@ -158,7 +158,7 @@ class PapadimitriouAlgorithm:
         for _ in tqdm(range(outer_iterations), desc="outer_loop"):
             self.random_initialization()
 
-            inner_progress_bar = tqdm(total=inner_iterations, desc="inner_loop")
+            inner_progress_bar = tqdm(total=inner_iterations, desc="inner_loop", leave=False)
             for inner_it in range(inner_iterations):
                 if inner_it and inner_it % inner_pbar_ratio == 0:
                     inner_progress_bar.update(inner_pbar_ratio)
@@ -166,6 +166,7 @@ class PapadimitriouAlgorithm:
                 if debug:
                     self.print_status()
                 if not self.invalid_clauses:
+                    inner_progress_bar.close()
                     return True
 
                 random_clause = random.choice(list(self.invalid_clauses))
@@ -174,6 +175,8 @@ class PapadimitriouAlgorithm:
                 if debug:
                     print(f"random variable to switch = {random_variable}")
                     input()
+
+            inner_progress_bar.close()
 
         return False
 
@@ -200,4 +203,6 @@ if __name__ == "__main__":
     clauses = get_clauses_from_file(filename)
 
     problem = PapadimitriouAlgorithm(clauses)
-    print(problem.solve())
+    is_soluble = problem.solve()
+
+    print(f"{is_soluble=}")
