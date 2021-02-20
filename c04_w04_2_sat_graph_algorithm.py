@@ -9,6 +9,9 @@ import sys
 
 from tqdm import tqdm
 
+from c04_w04_2_sat_algorithm import get_clauses_from_file
+
+
 def get_graph_from_filename(graph_filename):
     """
     Read graph from the given file
@@ -22,7 +25,20 @@ def get_graph_from_filename(graph_filename):
 
     return graph
 
+def get_graph_from_clauses(clauses):
+    """ Get a graph from 2-sat clauses.
+    For example the clause (x1 or x2) means that if x1 is False, x2 must be True, and
+    viceversa.
 
+    So (x1, x2) clause will generate the following edges: (-x1, x2) and (-x2, x1)
+    """
+    graph = defaultdict(list)
+
+    for var_1, var_2 in clauses:
+        graph[var_1 * -1].append(var_2)
+        graph[var_2 * -1].append(var_1)
+
+    return dict(graph)
 
 @dataclass
 class StronglyConnectedComponents:
@@ -101,7 +117,8 @@ if __name__ == "__main__":
     filename = sys.argv[1]
 
     print(f"Calculate StronglyConnectedComponents from file {filename}")
-    graph = get_graph_from_filename(filename)
+    clauses = get_clauses_from_file(filename)
+    graph = get_graph_from_clauses(clauses)
     sccs_problem = StronglyConnectedComponents(graph)
 
     components = sccs_problem.calc()
