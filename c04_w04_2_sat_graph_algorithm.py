@@ -11,6 +11,9 @@ from tqdm import tqdm
 
 from c04_w04_2_sat_algorithm import get_clauses_from_file
 
+class InsolubleSATError(Exception):
+    pass
+
 
 def get_graph_from_filename(graph_filename):
     """
@@ -35,6 +38,13 @@ def get_graph_from_clauses(clauses):
     graph = defaultdict(list)
 
     for var_1, var_2 in clauses:
+        # create nodes in graph if they don't exists and do nothing if they were
+        # already created)
+        graph[var_1]
+        graph[var_2]
+
+        # add constraints to opposit nodes (if var_1 is false, var_2 must be true and
+        # vice versa
         graph[var_1 * -1].append(var_2)
         graph[var_2 * -1].append(var_1)
 
@@ -60,15 +70,16 @@ class StronglyConnectedComponents:
 
 
     @staticmethod
-    def _scc_calc(graph, order=None):
+    def _scc_calc(graph, order=None, sat_scc=False):
         explored_vertices = set()
         finishing_order = []
-        components_leaders = Counter()
         leaders_order = []
 
         def depth_first_search(graph, start):
             leaders_order.append(start)
             nodes_to_expand = [start]
+            if sat_scc:
+                components_in_scc = {start}
 
             starting_order = []
 
@@ -76,10 +87,16 @@ class StronglyConnectedComponents:
                 tail = nodes_to_expand.pop(-1)
                 if tail not in explored_vertices:
                     pbar.set_description(f"Nodes to expand {len(nodes_to_expand)}")
-                    starting_order.append(tail)
+                    if not sat_scc:
+                        # only populate this list in first iteration, to find the leaders
+                        starting_order.append(tail)
                     explored_vertices.add(tail)
-                    components_leaders[start] += 1
-                    # print(f"    node {tail}")
+
+                    if sat_scc:
+                        if tail * -1 in components_in_scc:
+                            raise InsolubleSATError
+                        components_in_scc.add(tail)
+
                     nodes_to_expand.extend(
                         [head for head in graph[tail] if head not in explored_vertices]
                     )
@@ -96,21 +113,18 @@ class StronglyConnectedComponents:
                 # print(f"leader {node}")
                 depth_first_search(graph, node)
 
-        print(f"ACAAAAA {leaders_order=}")
-        return finishing_order, components_leaders
+        return finishing_order
 
     def calc(self):
         """
         Compute all the strongly connected components (sccs) and return its leaders and
         size
         """
-        finishing_order, _ = self._scc_calc(self.inverted_graph)
+        finishing_order = self._scc_calc(self.inverted_graph)
 
         finishing_order.reverse()
 
-        _, components_leaders = self._scc_calc(self.graph, finishing_order)
-
-        return components_leaders
+        self._scc_calc(self.graph, finishing_order, sat_scc=True)
 
 
 if __name__ == "__main__":
@@ -121,15 +135,9 @@ if __name__ == "__main__":
     graph = get_graph_from_clauses(clauses)
     sccs_problem = StronglyConnectedComponents(graph)
 
-    components = sccs_problem.calc()
+    try:
+        sccs_problem.calc()
+        print("✅ SOLUTION FOUND! This problem is soluble")
+    except InsolubleSATError:
+        print("❌ ERROR TRYING TO FIND A SOLUTION. This problem is not soluble")
 
-    how_many = 5
-    print(f"Components: {components}")
-    print("The {how_many} most bigger:")
-    biggers = components.most_common(how_many)
-
-    biggers_size = [str(size) for leader, size in biggers]
-
-    biggers_size += ["0"] * (how_many - len(biggers))
-
-    print(",".join(biggers_size))
